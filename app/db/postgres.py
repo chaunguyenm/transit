@@ -18,8 +18,8 @@ class StopTime(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     trip_id = Column(String, nullable=False)
     stop_id = Column(String, nullable=False)
-    arrival_time = Column(String, nullable=False)
-    stop_sequence = Column(String, nullable=False)
+    arrival_time = Column(Integer, nullable=False)
+    stop_sequence = Column(Integer, nullable=False)
 
 
 CONNECTION_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"

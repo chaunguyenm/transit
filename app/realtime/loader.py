@@ -1,8 +1,12 @@
 import asyncio
-from app.metrics.registry import vehicles_active
+from app.metrics.registry import vehicles_active, trips_active, routes_active
 from google.transit import gtfs_realtime_pb2
 from app.config import GTFS_RT_FEEDS
-import time
+from app.db.postgres import Session, Trip
+from sqlalchemy import select
+from app.config import DEBUG
+
+session = Session()
 
 async def worker():
     while True:
@@ -10,49 +14,58 @@ async def worker():
         # process_trip_updates(feed.trip_updates, static_trip_lookup)
         # process_cancellations(feed.trip_updates, static_trip_lookup)
         # process_headways(feed.vehicle_positions)
+        process_vehicle_positions(feed["vehicle_positions"])
 
         await asyncio.sleep(15)
 
+
 def fetch():
-    feed = gtfs_realtime_pb2.FeedMessage()
+    trip_feed = gtfs_realtime_pb2.FeedMessage()
+    vehicle_feed = gtfs_realtime_pb2.FeedMessage()
+
     trip_updates_pb = GTFS_RT_FEEDS["trips"]
     vehicle_positions_pb = GTFS_RT_FEEDS["vehicle_positions"]
 
     trip_updates = []
     with open(trip_updates_pb, "rb") as f:
-        feed.ParseFromString(f.read())
-        for entity in feed.entity:
+        trip_feed.ParseFromString(f.read())
+        for entity in trip_feed.entity:
             if entity.HasField("trip_update"):
                 trip_updates.append(entity.trip_update)
-    
+
     vehicle_positions = []
     with open(vehicle_positions_pb, "rb") as f:
-        feed.ParseFromString(f.read())
-        for entity in feed.entity:
+        vehicle_feed.ParseFromString(f.read())
+        for entity in vehicle_feed.entity:
             if entity.HasField("vehicle"):
                 vehicle_positions.append(entity.vehicle)
-    
-    return {"trip_updates": trip_updates, "vehicle_positions": vehicle_positions}
+
+    return {
+        "trip_updates": trip_updates,
+        "vehicle_positions": vehicle_positions,
+    }
 
 
 def process_vehicle_positions(vehicle_positions):
-    now = time.time()
-
+    updated_active_vehicles, updated_active_trips, updated_active_routes = set(), set(), set()
     for vp in vehicle_positions:
-        if not vp.vehicle.id:
-            continue
-        vehicle_last_seen[vp.vehicle.id] = now
+        if vp.vehicle.id:
+            updated_active_vehicles.add(vp.vehicle.id)
+        if vp.trip.trip_id:
+            updated_active_trips.add(vp.trip.trip_id)
+            statement = select(Trip.route_id).where(Trip.trip_id == vp.trip.trip_id)
+            routes = session.scalars(statement).all()
+            for route in routes:
+                updated_active_routes.add(route)
+    vehicles_active.set(len(updated_active_vehicles))
+    trips_active.set(len(updated_active_trips))
+    routes_active.set(len(updated_active_routes))
 
-
-def update_vehicles_active():
-    now = time.time()
-    active = [
-        vid for vid, ts in vehicle_last_seen.items()
-        if now - ts <= VEHICLE_TTL
-    ]
-
-    vehicles_active.set(len(active))
-
+    if DEBUG:
+        print("active_vehicles", updated_active_vehicles)
+        print("active_trips", updated_active_trips)
+        print("active_routes", updated_active_routes)
+        
 
 # def process_trip_updates(trip_updates, static_trip_lookup):
 #     """
