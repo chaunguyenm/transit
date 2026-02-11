@@ -1,0 +1,67 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order,continuous_pickup,continuous_drop_off,cemv_support
+1,"mississauga-on-ca",1,"Dundas",,3,,D33517,FFFFFF,0,1,3,1
+2,"mississauga-on-ca",2,"Hurontario",,3,,D33517,FFFFFF,0,1,3,1
+3,"mississauga-on-ca",3,"Bloor",,3,,D33517,FFFFFF,0,1,3,1
+4,"mississauga-on-ca",4,"North Service Road",,3,,D33517,FFFFFF,0,1,3,1
+5,"mississauga-on-ca",5,"Dixie",,3,,D33517,FFFFFF,0,1,3,1
+6,"mississauga-on-ca",6,"Credit Woodlands",,3,,D33517,FFFFFF,0,1,3,1
+7,"mississauga-on-ca",7,"Airport",,3,,D33517,FFFFFF,0,1,3,1
+8,"mississauga-on-ca",8,"Cawthra",,3,,D33517,FFFFFF,0,1,3,1
+9,"mississauga-on-ca",9,"Rathburn",,3,,D33517,FFFFFF,0,1,3,1
+10,"mississauga-on-ca",10,"Bristol",,3,,D33517,FFFFFF,0,1,3,1
+11,"mississauga-on-ca",11,"Westwood",,3,,D33517,FFFFFF,0,1,3,1
+13,"mississauga-on-ca",13,"Glen Erin",,3,,D33517,FFFFFF,0,1,3,1
+14,"mississauga-on-ca",14,"Lorne Park",,3,,D33517,FFFFFF,0,1,3,1
+15,"mississauga-on-ca",15,"Drew",,3,,D33517,FFFFFF,0,1,3,1
+16,"mississauga-on-ca",16,"Malton",,3,,D33517,FFFFFF,0,1,3,1
+17,"mississauga-on-ca",17,"Hurontario",,3,,D33517,FFFFFF,0,1,3,1
+18,"mississauga-on-ca",18,"Derry",,3,,D33517,FFFFFF,0,1,3,1
+20,"mississauga-on-ca",20,"Rathburn",,3,,D33517,FFFFFF,0,1,3,1
+22,"mississauga-on-ca",22,"Finch",,3,,D33517,FFFFFF,0,1,3,1
+23,"mississauga-on-ca",23,"Lakeshore",,3,,D33517,FFFFFF,0,1,3,1
+24,"mississauga-on-ca",24,"Northwest",,3,,D33517,FFFFFF,0,1,3,1
+25,"mississauga-on-ca",25,"Traders Loop",,3,,D33517,FFFFFF,0,1,3,1
+26,"mississauga-on-ca",26,"Burnhamthorpe",,3,,D33517,FFFFFF,0,1,3,1
+28,"mississauga-on-ca",28,"Confederation",,3,,D33517,FFFFFF,0,1,3,1
+29,"mississauga-on-ca",29,"Park Royal",,3,,D33517,FFFFFF,0,1,3,1
+30,"mississauga-on-ca",30,"Rexdale",,3,,D33517,FFFFFF,0,1,3,1
+31,"mississauga-on-ca",31,"Ogden",,3,,D33517,FFFFFF,0,1,3,1
+35,"mississauga-on-ca",35,"Eglinton",,3,,D33517,FFFFFF,0,1,3,1
+36,"mississauga-on-ca",36,"Ridgeway",,3,,D33517,FFFFFF,0,1,3,1
+38,"mississauga-on-ca",38,"Creditview",,3,,D33517,FFFFFF,0,1,3,1
+39,"mississauga-on-ca",39,"Britannia",,3,,D33517,FFFFFF,0,1,3,1
+42,"mississauga-on-ca",42,"Derry",,3,,D33517,FFFFFF,0,1,3,1
+43,"mississauga-on-ca",43,"Matheson",,3,,D33517,FFFFFF,0,1,3,1
+44,"mississauga-on-ca",44,"Mississauga Road",,3,,D33517,FFFFFF,0,1,3,1
+45,"mississauga-on-ca",45,"Winston Churchill",,3,,D33517,FFFFFF,0,1,3,1
+46,"mississauga-on-ca",46,"Tenth Line",,3,,D33517,FFFFFF,0,1,3,1
+48,"mississauga-on-ca",48,"Erin Mills",,3,,D33517,FFFFFF,0,1,3,1
+49,"mississauga-on-ca",49,"McDowell",,3,,D33517,FFFFFF,0,1,3,1
+51,"mississauga-on-ca",51,"Tomken",,3,,D33517,FFFFFF,0,1,3,1
+53,"mississauga-on-ca",53,"Kennedy",,3,,D33517,FFFFFF,0,1,3,1
+57,"mississauga-on-ca",57,"Courtneypark",,3,,D33517,FFFFFF,0,1,3,1
+61,"mississauga-on-ca",61,"Mavis",,3,,D33517,FFFFFF,0,1,3,1
+66,"mississauga-on-ca",66,"McLaughlin",,3,,D33517,FFFFFF,0,1,3,1
+68,"mississauga-on-ca",68,"Terry Fox",,3,,D33517,FFFFFF,0,1,3,1
+70,"mississauga-on-ca",70,"Keaton",,3,,D33517,FFFFFF,0,1,3,1
+71,"mississauga-on-ca",71,"Sheridan",,3,,D33517,FFFFFF,0,1,3,1
+73,"mississauga-on-ca",73,"Kamato",,3,,D33517,FFFFFF,0,1,3,1
+74,"mississauga-on-ca",74,"Explorer",,3,,D33517,FFFFFF,0,1,3,1
+90,"mississauga-on-ca",90,"Terragar-Copenhagen Loop",,3,,D33517,FFFFFF,0,1,3,1
+101,"mississauga-on-ca",101,"Dundas Express",,3,,026BCD,FFFFFF,0,1,3,1
+103,"mississauga-on-ca",103,"Hurontario Express",,3,,026BCD,FFFFFF,0,1,3,1
+107,"mississauga-on-ca",107,"Malton Express",,3,,026BCD,FFFFFF,0,1,3,1
+108,"mississauga-on-ca",108,"Financial Express",,3,,026BCD,FFFFFF,0,1,3,1
+109,"mississauga-on-ca",109,"Meadowvale Express",,3,,026BCD,FFFFFF,0,1,3,1
+110,"mississauga-on-ca",110,"University Express",,3,,026BCD,FFFFFF,0,1,3,1
+126,"mississauga-on-ca",126,"Burnhamthorpe Express",,3,,026BCD,FFFFFF,0,1,3,1
+135,"mississauga-on-ca",135,"Eglinton Express",,3,,026BCD,FFFFFF,0,1,3,1
+302,"mississauga-on-ca",302,"Philip Pocock SS",,3,,D33517,FFFFFF,0,1,3,1
+304,"mississauga-on-ca",304,"Father Goetz SS",,3,,D33517,FFFFFF,0,1,3,1
+306,"mississauga-on-ca",306,"Streetsville SS",,3,,D33517,FFFFFF,0,1,3,1
+307,"mississauga-on-ca",307,"Philip Pocock SS",,3,,D33517,FFFFFF,0,1,3,1
+312,"mississauga-on-ca",312,"Glenforest SS",,3,,D33517,FFFFFF,0,1,3,1
+313,"mississauga-on-ca",313,"Streetsville SS",,3,,D33517,FFFFFF,0,1,3,1
+314,"mississauga-on-ca",314,"Rick Hansen SS",,3,,D33517,FFFFFF,0,1,3,1
+315,"mississauga-on-ca",315,"Rick Hansen SS",,3,,D33517,FFFFFF,0,1,3,1
+321,"mississauga-on-ca",321,"Stephen Lewis SS",,3,,D33517,FFFFFF,0,1,3,1
