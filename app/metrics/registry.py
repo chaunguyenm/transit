@@ -1,4 +1,4 @@
-from prometheus_client import Gauge, Counter, Histogram
+from prometheus_client import Gauge, Counter
 
 
 # Active vehicle is defined as a vehicle with an update within a certain time.

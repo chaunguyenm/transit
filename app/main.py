@@ -1,16 +1,19 @@
-from app.static.loader import Loader
-from app.config import GTFS_STATIC_PATH
-from sqlalchemy.exc import OperationalError
-from app.db.postgres import init_db
-import time
-from fastapi import FastAPI, Request
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from fastapi.responses import Response
-from app.metrics.registry import REQUEST_COUNT
 import asyncio
+import time
+
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from sqlalchemy.exc import OperationalError
+
+from app.config import GTFS_STATIC_PATH
+from app.db.postgres import init_db
+from app.metrics.registry import REQUEST_COUNT
 from app.realtime.loader import worker
+from app.static.loader import Loader
 
 app = FastAPI()
+
 
 @app.on_event("startup")
 async def startup():

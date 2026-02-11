@@ -1,12 +1,14 @@
 import asyncio
-from app.metrics.registry import vehicles_active, trips_active, routes_active, gtfs_trip_on_time_total, gtfs_trip_delay_seconds, gtfs_stop_skipped
-from google.transit import gtfs_realtime_pb2
-from app.config import GTFS_RT_FEEDS
-from app.db.postgres import Session, Trip, StopTime
-from sqlalchemy import select
-from app.config import DEBUG
 from collections import defaultdict
 from datetime import datetime, date, time, timedelta
+
+from google.transit import gtfs_realtime_pb2
+from sqlalchemy import select
+
+from app.config import DEBUG, GTFS_RT_FEEDS
+from app.db.postgres import Session, Trip, StopTime
+from app.metrics.registry import vehicles_active, trips_active, routes_active, gtfs_trip_on_time_total, gtfs_trip_delay_seconds, gtfs_stop_skipped
+
 
 session = Session()
 

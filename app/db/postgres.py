@@ -1,8 +1,11 @@
-from app.config import (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, DEBUG)
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from app.config import (POSTGRES_USER, POSTGRES_PASSWORD,
+                        POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, DEBUG)
+
 Base = declarative_base()
+
 
 class Trip(Base):
     __tablename__ = 'trips'

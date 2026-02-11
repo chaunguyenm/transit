@@ -1,5 +1,7 @@
 import csv
+
 from app.db.postgres import Session, Trip, StopTime
+
 
 class Loader:
     def __init__(self, path):
@@ -22,7 +24,8 @@ class Loader:
                 trip = Trip(
                     trip_id=row["trip_id"],
                     route_id=row["route_id"],
-                    direction_id=int(row["direction_id"]) if row.get("direction_id") else None
+                    direction_id=int(row["direction_id"]) if row.get(
+                        "direction_id") else None
                 )
                 session.merge(trip)
 
