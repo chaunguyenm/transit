@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 def getenv_required(name: str) -> str:
     value = os.getenv(name)
     if value is None:
@@ -36,7 +37,7 @@ DATABASE_URL = (
 )
 
 GTFS_RT_FEEDS = {
-    "trips": os.getenv(
+    "trip_updates": os.getenv(
         "GTFS_RT_TRIPS",
         str(BASE_DIR / "realtime" / "TripUpdates.pb"),
     ),

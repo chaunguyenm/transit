@@ -1,15 +1,5 @@
 from prometheus_client import Gauge, Counter, Histogram
 
-EARLY_THRESHOLD = -60     # seconds
-LATE_THRESHOLD = 300      # seconds
-BUNCHING_THRESHOLD = 120  # seconds
-
-def classify_delay(delay_seconds: float) -> str:
-    if delay_seconds < EARLY_THRESHOLD:
-        return "early"
-    elif delay_seconds > LATE_THRESHOLD:
-        return "late"
-    return "on_time"
 
 # Active vehicle is defined as a vehicle with an update within a certain time.
 vehicles_active = Gauge(
@@ -32,13 +22,19 @@ routes_active = Gauge(
 gtfs_trip_delay_seconds = Gauge(
     "gtfs_trip_delay_seconds",
     "Current average trip delay in seconds",
-    ["route_id", "direction_id"]
+    ["route_id"]
 )
 
-gtfs_trip_on_time_total = Counter(
+gtfs_stop_skipped = Gauge(
+    "gtfs_stop_skipped",
+    "Current average number of stops skipped per trip",
+    ["route_id"]
+)
+
+gtfs_trip_on_time_total = Gauge(
     "gtfs_trip_on_time_total",
     "Trips by on-time status",
-    ["agency_id", "route_id", "status"]  # early | on_time | late
+    ["route_id", "status"]  # early | on_time | late
 )
 
 gtfs_headway_seconds = Gauge(
