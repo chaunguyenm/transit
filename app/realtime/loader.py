@@ -1,6 +1,7 @@
 import asyncio
 from collections import defaultdict
 from datetime import datetime, date, time, timedelta
+import requests
 
 from google.transit import gtfs_realtime_pb2
 from sqlalchemy import select
@@ -11,6 +12,22 @@ from app.metrics.registry import vehicles_active, trips_active, routes_active, g
 
 
 session = Session()
+trip_route_map = dict(
+    session.execute(select(Trip.trip_id, Trip.route_id)).all()
+)
+
+stop_time_lookup = {}
+rows = session.execute(
+    select(
+        StopTime.trip_id,
+        StopTime.stop_id,
+        StopTime.stop_sequence,
+        StopTime.arrival_time
+    )
+).all()
+for trip_id, stop_id, stop_seq, arrival in rows:
+    stop_time_lookup.setdefault(trip_id, {})
+    stop_time_lookup[trip_id][stop_id or stop_seq] = arrival
 
 
 async def worker():
@@ -18,8 +35,9 @@ async def worker():
         feed = fetch()
         process_vehicle_positions(feed["vehicle_positions"])
         process_trip_updates(feed["trip_updates"])
-
-        await asyncio.sleep(15)
+        if DEBUG:
+            print("Finished updating metrics!")
+        await asyncio.sleep(30)
 
 
 def fetch():
@@ -30,18 +48,25 @@ def fetch():
     vehicle_positions_pb = GTFS_RT_FEEDS["vehicle_positions"]
 
     trip_updates = []
-    with open(trip_updates_pb, "rb") as f:
-        trip_feed.ParseFromString(f.read())
-        for entity in trip_feed.entity:
-            if entity.HasField("trip_update"):
-                trip_updates.append(entity.trip_update)
+    trip_response = requests.get(trip_updates_pb)
+    trip_feed.ParseFromString(trip_response.content)
+    if DEBUG:
+        print("TripUpdates feed timestamp:", trip_feed.header.timestamp)
+        print("TripUpdates entity count:", len(trip_feed.entity))
+    for entity in trip_feed.entity:
+        if entity.HasField("trip_update"):
+            trip_updates.append(entity.trip_update)
 
     vehicle_positions = []
-    with open(vehicle_positions_pb, "rb") as f:
-        vehicle_feed.ParseFromString(f.read())
-        for entity in vehicle_feed.entity:
-            if entity.HasField("vehicle"):
-                vehicle_positions.append(entity.vehicle)
+    vehicle_response = requests.get(vehicle_positions_pb)
+    vehicle_feed.ParseFromString(vehicle_response.content)
+    if DEBUG:
+        print("VehiclePositions feed timestamp:",
+              vehicle_feed.header.timestamp)
+        print("VehiclePositions entity count:", len(vehicle_feed.entity))
+    for entity in vehicle_feed.entity:
+        if entity.HasField("vehicle"):
+            vehicle_positions.append(entity.vehicle)
 
     return {
         "trip_updates": trip_updates,
@@ -96,9 +121,6 @@ def process_trip_updates(trip_updates):
         trip_id = tu.trip.trip_id
 
         for stu in tu.stop_time_update:
-            stops += 1
-            if not stu.arrival and not stu.departure:
-                skips += 1
             realtime = None
             if stu.arrival:
                 if stu.arrival.time:
@@ -112,27 +134,33 @@ def process_trip_updates(trip_updates):
                     total_delay += stu.departure.delay
 
             if realtime is not None:
+                arrival_time = None
                 if stu.stop_id:
-                    statement = select(StopTime.arrival_time).where(
-                        StopTime.trip_id == trip_id,
-                        StopTime.stop_id == stu.stop_id)
+                    arrival_time = stop_time_lookup[trip_id][stu.stop_id]
                 else:
-                    statement = select(StopTime.arrival_time).where(
-                        StopTime.trip_id == trip_id,
-                        StopTime.stop_sequence == stu.stop_sequence)
-                arrival_time = session.scalars(statement).first()
+                    arrival_time = stop_time_lookup[trip_id][stu.stop_sequence]
+                if arrival_time is None:
+                    print(
+                        f"arrival_time not found for trip_id={trip_id} stop_id={stu.stop_id} stop_sequence={stu.stop_sequence}")
+                    continue
                 scheduled = scheduled_to_epoch(arrival_time)
-
                 delay = realtime - scheduled
                 total_delay += delay
 
-        avg_delay_per_stop = float(total_delay) / stops
-        statement = select(Trip.route_id).where(Trip.trip_id == trip_id)
-        route = session.scalars(statement).first()
-        delays_by_route[route].append(avg_delay_per_stop)
+            if not stu.arrival and not stu.departure:
+                skips += 1
+            stops += 1
 
-        skip_ratio = float(skips) / stops
-        skips_by_route[route].append(skip_ratio)
+        if stops != 0:
+            avg_delay_per_stop = float(total_delay) / stops
+            statement = select(Trip.route_id).where(Trip.trip_id == trip_id)
+            route = trip_route_map.get(trip_id)
+            delays_by_route[route].append(avg_delay_per_stop)
+
+            skip_ratio = float(skips) / stops
+            skips_by_route[route].append(skip_ratio)
+        else:
+            print(f"Skipped trip_id={trip_id}, no data found!")
 
     if DEBUG:
         print("delays_by_route", delays_by_route)
@@ -170,6 +198,8 @@ def process_trip_updates(trip_updates):
 
 
 def scheduled_to_epoch(seconds_since_midnight):
+    if seconds_since_midnight is None:
+        raise TypeError()
     today = date.today()
     dt = datetime.combine(today, time(0, 0)) + \
         timedelta(seconds=seconds_since_midnight)

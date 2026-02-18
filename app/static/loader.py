@@ -1,5 +1,7 @@
 import csv
 
+from sqlalchemy import select, func
+
 from app.db.postgres import Session, Trip, StopTime
 
 
@@ -7,14 +9,22 @@ class Loader:
     def __init__(self, path):
         self.path = path
 
-    def load(self):
+    def load(self, override=False):
         session = Session()
         try:
-            self._load_trips(session)
-            self._load_stop_times(session)
+            if override or not self._is_initialized(session):
+                self._load_trips(session)
+                self._load_stop_times(session)
             session.commit()
         finally:
             session.close()
+
+    def _is_initialized(self, session):
+        stoptime_stmt = select(func.count(StopTime.id))
+        stoptime_count = session.execute(stoptime_stmt).scalar()
+        trip_stmt = select(func.count(Trip.trip_id))
+        trip_count = session.execute(trip_stmt).scalar()
+        return stoptime_count > 0 and trip_count > 0
 
     def _load_trips(self, session):
         trips_file = f"{self.path}/trips.txt"

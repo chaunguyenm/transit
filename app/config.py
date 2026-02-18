@@ -37,14 +37,8 @@ DATABASE_URL = (
 )
 
 GTFS_RT_FEEDS = {
-    "trip_updates": os.getenv(
-        "GTFS_RT_TRIPS",
-        str(BASE_DIR / "realtime" / "TripUpdates.pb"),
-    ),
-    "vehicle_positions": os.getenv(
-        "GTFS_RT_VEHICLES",
-        str(BASE_DIR / "realtime" / "VehiclePositions.pb"),
-    ),
+    "trip_updates": "https://www.miapp.ca/GTFS_RT/TripUpdate/TripUpdates.pb",
+    "vehicle_positions": "https://www.miapp.ca/GTFS_RT/Vehicle/VehiclePositions.pb",
 }
 
 DEBUG = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
