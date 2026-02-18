@@ -40,13 +40,7 @@ gtfs_trip_on_time_total = Gauge(
 gtfs_headway_seconds = Gauge(
     "gtfs_headway_seconds",
     "Current average headway between vehicles",
-    ["agency_id", "route_id", "direction_id"]
-)
-
-gtfs_bunching_events_total = Counter(
-    "gtfs_bunching_events_total",
-    "Detected vehicle bunching events",
-    ["agency_id", "route_id"]
+    ["stop_id"]
 )
 
 REQUEST_COUNT = Counter("http_requests_total", "Total number of HTTP requests")

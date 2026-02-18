@@ -8,15 +8,16 @@ from sqlalchemy import select
 
 from app.config import DEBUG, GTFS_RT_FEEDS
 from app.db.postgres import Session, Trip, StopTime
-from app.metrics.registry import vehicles_active, trips_active, routes_active, gtfs_trip_on_time_total, gtfs_trip_delay_seconds, gtfs_stop_skipped
+from app.metrics.registry import vehicles_active, trips_active, routes_active, gtfs_trip_on_time_total, gtfs_trip_delay_seconds, gtfs_stop_skipped, gtfs_headway_seconds
 
 
 session = Session()
+
+# load into memory
 trip_route_map = dict(
     session.execute(select(Trip.trip_id, Trip.route_id)).all()
 )
 
-stop_time_lookup = {}
 rows = session.execute(
     select(
         StopTime.trip_id,
@@ -25,9 +26,29 @@ rows = session.execute(
         StopTime.arrival_time
     )
 ).all()
+
+stop_time_lookup = {}
 for trip_id, stop_id, stop_seq, arrival in rows:
     stop_time_lookup.setdefault(trip_id, {})
     stop_time_lookup[trip_id][stop_id or stop_seq] = arrival
+
+# stop_arrival_map = {}
+# stop_headway_map = {}
+# for _, stop_id, _, arrival in rows:
+#     stop_arrival_map.setdefault(stop_id, [])
+#     stop_arrival_map[stop_id].append(arrival)
+# for stop_id, arrivals in stop_arrival_map.items():
+#     stop_arrival_map[stop_id] = sorted(arrivals)
+# for stop_id, arrivals in stop_arrival_map.items():
+#     stop_headway_map.setdefault(stop_id, [])
+#     for i, arrival in enumerate(arrivals):
+#         if i > 0:
+#             stop_headway_map[stop_id].append(arrival - arrivals[i - 1])
+#     if len(arrivals) > 1:
+#         gtfs_headway_seconds.labels(stop_id).set(
+#             sum(stop_headway_map[stop_id]) / len(stop_headway_map[stop_id]))
+# if DEBUG:
+#     print("stop_headway", stop_headway_map)
 
 
 async def worker():
@@ -112,6 +133,7 @@ def classify_delay(delay_seconds: float) -> str:
 def process_trip_updates(trip_updates):
     delays_by_route = defaultdict(list)
     skips_by_route = defaultdict(list)
+    arrivals_by_stop = defaultdict(list)
 
     for tu in trip_updates:
         total_delay, stops, skips = 0, 0, 0
@@ -137,6 +159,7 @@ def process_trip_updates(trip_updates):
                 arrival_time = None
                 if stu.stop_id:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_id]
+                    arrivals_by_stop[stu.stop_id].append(arrival_time)
                 else:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_sequence]
                 if arrival_time is None:
@@ -153,7 +176,6 @@ def process_trip_updates(trip_updates):
 
         if stops != 0:
             avg_delay_per_stop = float(total_delay) / stops
-            statement = select(Trip.route_id).where(Trip.trip_id == trip_id)
             route = trip_route_map.get(trip_id)
             delays_by_route[route].append(avg_delay_per_stop)
 
@@ -196,6 +218,20 @@ def process_trip_updates(trip_updates):
         avg_skip_ratio = sum(skip_ratios) / len(skip_ratios)
         gtfs_stop_skipped.labels(route_id=route).set(avg_skip_ratio)
 
+    # update average headway per stop
+    headway_by_stop = defaultdict(list)
+    for stop_id, arrivals in arrivals_by_stop.items():
+        arrivals_by_stop[stop_id] = sorted(arrivals)
+    for stop_id, arrivals in arrivals_by_stop.items():
+        for i, arrival in enumerate(arrivals):
+            if i > 0:
+                headway_by_stop[stop_id].append(arrival - arrivals[i - 1])
+        if len(arrivals) > 1:
+            gtfs_headway_seconds.labels(stop_id).set(
+                sum(headway_by_stop[stop_id]) / len(headway_by_stop[stop_id]))
+    if DEBUG:
+        print("headway_by_stop", headway_by_stop)
+
 
 def scheduled_to_epoch(seconds_since_midnight):
     if seconds_since_midnight is None:
@@ -204,35 +240,3 @@ def scheduled_to_epoch(seconds_since_midnight):
     dt = datetime.combine(today, time(0, 0)) + \
         timedelta(seconds=seconds_since_midnight)
     return int(dt.timestamp())
-
-# def process_headways(
-#     vehicle_positions,
-#     bunching_threshold: int
-# ):
-#     """
-#     vehicle_positions:
-#       dict[(route_id, direction_id)] -> list of vehicle timestamps
-#     """
-
-#     for (route_id, direction_id), times in vehicle_positions.items():
-#         if len(times) < 2:
-#             continue
-
-#         times.sort()
-#         headways = [
-#             times[i + 1] - times[i]
-#             for i in range(len(times) - 1)
-#         ]
-
-#         avg_headway = sum(headways) / len(headways)
-
-#         gtfs_headway_seconds.labels(
-#             route_id=route_id,
-#             direction_id=direction_id
-#         ).set(avg_headway)
-
-#         for h in headways:
-#             if h < bunching_threshold:
-#                 gtfs_bunching_events_total.labels(
-#                     route_id=route_id
-#                 ).inc()
