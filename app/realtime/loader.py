@@ -157,10 +157,10 @@ def process_trip_updates(trip_updates):
 
             if realtime is not None:
                 arrival_time = None
-                if stu.stop_id:
+                if stu.stop_id and trip_id in stop_time_lookup and stu.stop_id in stop_time_lookup[trip_id]:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_id]
                     arrivals_by_stop[stu.stop_id].append(arrival_time)
-                else:
+                elif stu.stop_sequence and trip_id in stop_time_lookup and stu.stop_sequence in stop_time_lookup[trip_id]:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_sequence]
                 if arrival_time is None:
                     print(
