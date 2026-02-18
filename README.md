@@ -26,6 +26,13 @@ POSTGRES_DB=transit
 DEBUG=true
 POLL_INTERVAL_SECONDS=15
 PROMETHEUS_PORT=9100
+
+GF_SECURITY_ADMIN_USER=
+GF_SECURITY_ADMIN_PASSWORD=
+GF_USERS_ALLOW_SIGN_UP=false
+GF_AUTH_ANONYMOUS_ENABLED=true
+GF_AUTH_ANONYMOUS_ORG_NAME="Anonymous Organization"
+GF_AUTH_ANONYMOUS_ORG_ROLE="Viewer"
 ```
 
 Run the Docker containers.
@@ -34,10 +41,17 @@ Run the Docker containers.
 docker-compose up --build
 ```
 
-The app will be running at port 9100, and Prometheus at port 9090.
+The app will be running at port 9100, Prometheus at port 9090, and Grafana at
+port 3000.
+
+To view the provisioned dashboard, navigate to http://localhost:3000 and log in
+using the credentials specified in the `.env` file. On the
+Grafana Home page, go to Dashboards > MiWay.
+
+![Grafana Dashboard](./preview.png)
 
 ## Roadmap
 
-- Export additional service performance metrics.
-- Add Grafana dashboarding.
-- Implement reasoning/prediction based on past data.
+- [x] Export additional service performance metrics.
+- [x] Add Grafana dashboarding.
+- [ ] Implement reasoning/prediction based on past data.
