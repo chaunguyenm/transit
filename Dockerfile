@@ -5,7 +5,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /code
 COPY . /code
 
-ENV PYTHONPATH=/code
+ENV PYTHONPATH=/code:/code/gtfsdb:/code/gtfsdb/gtfsdb
 ENV PATH="/code/.venv/bin:$PATH"
 
 RUN uv sync --locked

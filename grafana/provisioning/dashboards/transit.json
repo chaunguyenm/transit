@@ -212,7 +212,7 @@
           "refId": "A"
         }
       ],
-      "title": "Stops Skipped (By Route)",
+      "title": "Stops Skipped",
       "type": "stat"
     },
     {
@@ -499,8 +499,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "s"
+          }
         },
         "overrides": []
       },

@@ -1,0 +1,3 @@
+[submodule "gtfsdb"]
+	path = gtfsdb
+	url = https://github.com/OpenTransitTools/gtfsdb.git

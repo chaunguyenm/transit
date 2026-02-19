@@ -7,9 +7,10 @@ from google.transit import gtfs_realtime_pb2
 from sqlalchemy import select
 
 from app.config import DEBUG, GTFS_RT_FEEDS
-from app.db.postgres import Session, Trip, StopTime
+from app.db.postgres import Session
 from app.metrics.registry import vehicles_active, trips_active, routes_active, gtfs_trip_on_time_total, gtfs_trip_delay_seconds, gtfs_stop_skipped, gtfs_headway_seconds
-
+from gtfsdb.model.stop_time import StopTime
+from gtfsdb.model.trip import Trip
 
 session = Session()
 
@@ -157,9 +158,9 @@ def process_trip_updates(trip_updates):
 
             if realtime is not None:
                 arrival_time = None
+                arrivals_by_stop[stu.stop_id].append(realtime)
                 if stu.stop_id and trip_id in stop_time_lookup and stu.stop_id in stop_time_lookup[trip_id]:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_id]
-                    arrivals_by_stop[stu.stop_id].append(arrival_time)
                 elif stu.stop_sequence and trip_id in stop_time_lookup and stu.stop_sequence in stop_time_lookup[trip_id]:
                     arrival_time = stop_time_lookup[trip_id][stu.stop_sequence]
                 if arrival_time is None:
@@ -236,7 +237,9 @@ def process_trip_updates(trip_updates):
 def scheduled_to_epoch(seconds_since_midnight):
     if seconds_since_midnight is None:
         raise TypeError()
+    hours, minutes, seconds = int(seconds_since_midnight.split(
+        ":")[0]), int(seconds_since_midnight.split(":")[1]), int(seconds_since_midnight.split(":")[2])
     today = date.today()
-    dt = datetime.combine(today, time(0, 0)) + \
-        timedelta(seconds=seconds_since_midnight)
+    dt = datetime.combine(today, time(0, 0)) + timedelta(seconds=hours *
+                                                         3600 + minutes * 60 + seconds)
     return int(dt.timestamp())

@@ -14,12 +14,31 @@ services:
       timeout: 5s
       retries: 5
 
+  gtfsdb:
+    build:
+      context: ./gtfsdb
+    container_name: gtfsdb_loader
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    # environment:
+    #   DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
+    #   GTFS_URL: https://www.miapp.ca/GTFS/google_transit.zip
+    command:
+      - --database_url
+      - ${DATABASE_URL}
+      - ${GTFS_URL}
+
   app:
     build: .
     container_name: transit_app
     env_file:
       - .env
     depends_on:
+      gtfsdb:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
     ports:

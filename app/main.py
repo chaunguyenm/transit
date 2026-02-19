@@ -6,11 +6,9 @@ from fastapi.responses import Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy.exc import OperationalError
 
-from app.config import GTFS_STATIC_PATH
 from app.db.postgres import init_db
 from app.metrics.registry import REQUEST_COUNT
 from app.realtime.loader import worker
-from app.static.loader import Loader
 
 app = FastAPI()
 
@@ -18,13 +16,11 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     print("Starting up...")
-    # Initialize DB from static data
+    # Initialize database with session ready for query
     for _ in range(10):
         try:
             init_db()
-            loader = Loader(GTFS_STATIC_PATH)
-            loader.load()
-            print("GTFS static data loaded into PostgreSQL.")
+            print("PostgreSQL initialized.")
             break
         except OperationalError:
             print("Waiting for PostgreSQL to be ready...")
