@@ -388,6 +388,7 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -400,7 +401,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "s"
         },
         "overrides": []
       },
@@ -497,7 +499,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "s"
         },
         "overrides": []
       },
@@ -539,7 +542,7 @@
   ],
   "preload": false,
   "refresh": "30s",
-  "schemaVersion": 1,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []

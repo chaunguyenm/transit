@@ -52,6 +52,19 @@ Grafana Home page, go to Dashboards > MiWay.
 
 ## Roadmap
 
-- [x] Export additional service performance metrics.
-- [x] Add Grafana dashboarding.
-- [ ] Implement reasoning/prediction based on past data.
+- [x] Export additional service performance metrics
+- [x] Add Grafana dashboarding
+- [ ] Add support for other city's public transport
+    - [ ] Toronto
+      ([static](https://open.toronto.ca/dataset/merged-gtfs-ttc-routes-and-schedules/)
+      and
+      [real-time](https://open.toronto.ca/dataset/ttc-gtfs-realtime-gtfs-rt/))
+    - [ ] [Guelph](https://explore.guelph.ca/pages/transit-gtfs-data)
+    - [ ] [Brampton](https://geohub.brampton.ca/pages/brampton-transit)
+    - [ ] [York](https://www.yrt.ca/en/about-us/open-data.aspx)
+    - [ ]
+      [Hamilton](https://open.hamilton.ca/documents/SpatialSolutions::hsr-transit-feed/about?path=)
+
+For consideration:
+- Reliability scoring based on route, location, timing, etc.
+- Predictive delay forecast based on historical data
