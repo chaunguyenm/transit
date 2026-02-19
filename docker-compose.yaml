@@ -23,9 +23,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    # environment:
-    #   DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
-    #   GTFS_URL: https://www.miapp.ca/GTFS/google_transit.zip
     command:
       - --database_url
       - ${DATABASE_URL}
