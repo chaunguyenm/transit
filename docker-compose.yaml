@@ -28,6 +28,25 @@ services:
       - ${DATABASE_URL}
       - ${GTFS_URL}
 
+  gtfsrdb:
+    build:
+      context: ./gtfsrdb
+    container_name: gtfsrdb_loader
+    depends_on:
+      db:
+        condition: service_healthy
+      gtfsdb:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    command: 
+      - -c 
+      - -t ${GTFSRT_T_URL} 
+      # - -a ${GTFSRT_A_URL} 
+      - -p ${GTFSRT_P_URL} 
+      - -v
+      - -d ${DATABASE_URL}
+
   app:
     build: .
     container_name: transit_app
